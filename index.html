@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ToDo Application</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">ToDo Application</a>
+      </div>
+    </nav>
+
+    <div class="container mt-3">
+      <div class="row">
+        <h5 class="text-primary text-center">ToDo Application in JavaScript</h5>
+        <hr />
+        <div class="offset-md-3 col-md-6">
+          <div class="form-group">
+            <label class="form-label" for="taskInput">Enter Your Task</label>
+            <input
+              type="text"
+              id="taskInput"
+              class="form-control form-control-sm"
+              placeholder="Enter Your Task"
+            />
+          </div>
+
+          <div class="form-group mt-2">
+            <input type="checkbox" id="statusCheckbox" />
+            <label for="statusCheckbox">Mark as Done</label>
+          </div>
+
+          <div class="form-group mt-3">
+            <button id="addTaskBtn" class="btn btn-primary btn-sm">
+              <i class="bi bi-plus-circle"></i> Add Task
+            </button>
+          </div>
+
+          <div class="mt-3 col-md-12">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Task</th>
+                  <th>Status</th>
+                  <th>Date & Time</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody id="taskList">
+                <!-- Dynamic tasks will be added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      let taskCounter = 0;
+      let isEditing = false;
+      let currentRow;
+
+      document
+        .getElementById("addTaskBtn")
+        .addEventListener("click", function () {
+          const taskInput = document.getElementById("taskInput");
+          const taskValue = taskInput.value.trim();
+          const statusCheckbox = document.getElementById("statusCheckbox");
+          const statusValue = statusCheckbox.checked ? "Done" : "Pending";
+
+          if (taskValue) {
+            const dateTime = new Date().toLocaleString(); // Get the current date and time
+
+            if (isEditing) {
+              // Save changes to the current row
+              currentRow.querySelector(".taskName").textContent = taskValue;
+              currentRow.querySelector(".taskStatus").textContent = statusValue;
+              currentRow.querySelector(".taskDateTime").textContent = dateTime;
+              isEditing = false;
+              currentRow = null;
+              document.getElementById("addTaskBtn").textContent = "Add Task";
+            } else {
+              // Add a new task
+              taskCounter++;
+              const taskList = document.getElementById("taskList");
+
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                        <td>${taskCounter}</td>
+                        <td class="taskName">${taskValue}</td>
+                        <td class="taskStatus">${statusValue}</td>
+                        <td class="taskDateTime">${dateTime}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm editTaskBtn"><i class="bi bi-pencil-square"></i></button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger btn-sm deleteTaskBtn"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+
+              taskList.appendChild(row);
+
+              // Add event listener for Edit button
+              row
+                .querySelector(".editTaskBtn")
+                .addEventListener("click", function () {
+                  const taskName = row.querySelector(".taskName").textContent;
+                  const taskStatus =
+                    row.querySelector(".taskStatus").textContent;
+
+                  taskInput.value = taskName;
+                  statusCheckbox.checked = taskStatus === "Done";
+
+                  isEditing = true;
+                  currentRow = row;
+                  document.getElementById("addTaskBtn").textContent =
+                    "Save Changes";
+                });
+
+              // Add event listener for Delete button
+              row
+                .querySelector(".deleteTaskBtn")
+                .addEventListener("click", function () {
+                  row.remove();
+                });
+            }
+
+            // Clear the input fields
+            taskInput.value = "";
+            statusCheckbox.checked = false;
+          } else {
+            alert("Please enter a task.");
+          }
+        });
+    </script>
+  </body>
+</html>
